@@ -42,7 +42,21 @@ public class JavaZip
 		{
 			try
 			{
-				new JavaZip().zipDir(args[0]);
+				File f = new File(args[0]);
+				
+				if(!f.exists())
+				{
+					System.out.println("Does not exist");
+					return;
+				}
+				
+				if(!f.isDirectory())
+				{
+					System.out.println("Is not a dir");
+					return;
+				}
+				
+				new JavaZip().zipDir(f);
 			}
 			catch(Throwable t)
 			{
@@ -55,7 +69,7 @@ public class JavaZip
 		}
 	}
 	
-	private void zipDir(String dir) throws Throwable
+	private void zipDir(File dir) throws Throwable
 	{
 		File[] result = null;
 		DirectoryScanner scanner = null;
@@ -63,7 +77,7 @@ public class JavaZip
 		MainWindow.setExcludeHiddenFiles(false);
 		MainWindow.setExcludeSymbolicLinks(false);
 		
-		scanner = new DirectoryScannerRecursive(new File(dir), true);
+		scanner = new DirectoryScannerRecursive(dir, true);
 		
 		scanner.addIScanProgressListener(new IScanProgressListener() {
 			public void scanProgressEvent(ProgressEvent event)
@@ -92,7 +106,7 @@ public class JavaZip
 
 			for(File res : result)
 			{
-				String relativePath = Utils.getRelativePath(dir, res.getAbsolutePath());
+				String relativePath = Utils.getRelativePath(dir.getAbsolutePath(), res.getAbsolutePath());
 				System.out.println("Adding: " + res.getAbsolutePath());
 				addEntry(relativePath, res.getAbsolutePath(), out);
 			}
